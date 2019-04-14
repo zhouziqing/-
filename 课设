@@ -1,0 +1,202 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+typedef struct node{
+  char studentNumber[12];
+  char name[35];
+  char sex[5];
+  int age;
+  char major[50];
+  int studentClass;
+  struct node *next;
+}Node,*LinkList;
+
+int n, m;
+
+LinkList initailList(void) //链表的初始化
+{
+  LinkList list;
+
+  list = (LinkList)malloc(sizeof(Node));
+  if (!list)
+    printf("无可分配内存\n");
+  else
+  {
+    list->next = NULL; //头结点为空勿忘
+    printf("初始化成功\n");
+    return list;
+  }
+}
+
+void createList(LinkList list, int num) //尾插法创建链表
+{
+  printf("请依次输入学号，姓名，性别，年龄，专业，班级:\n");
+  for(int i = 0; i < num; i++)
+  {
+    LinkList p;
+    p = (LinkList)malloc(sizeof(Node));
+    if (!p)
+      printf("无可分配的内存\n");
+
+    scanf("%s %s %s %d %s %d", p->studentNumber, p->name, p->sex, &p->age, p->major, &p->studentClass);
+    p->next = list->next;
+    list->next = p;
+  }
+  putchar('\n');
+}
+
+void insertList(LinkList list, int place, Node x)
+{
+  LinkList p = list;
+  LinkList new_node;
+  int i = 0;
+
+  if (place > n+1 || place < 0)
+    printf("位置不合法\n");
+
+  while(p && i++ < place-1)
+  {
+    p = p->next;
+  }
+
+  new_node = (LinkList)malloc(sizeof(Node));
+
+
+  new_node->next = p->next;
+  p->next = new_node;
+
+  for (int i = 0; i < 11; i++) {
+    new_node->studentNumber[i] = x.studentNumber[i];
+  }
+
+  for (int i = 0; i < 35; i++) {
+    new_node->name[i] = x.name[i];
+
+  }
+
+  for (int i = 0; i < 5; i++) {
+    new_node->sex[i] = x.sex[i];
+  }
+
+  new_node->age = x.age;
+
+
+  for (int i = 0; i < 50; i++) {
+    new_node->major[i] = x.major[i];
+
+  }
+
+  new_node->studentClass = x.studentClass;
+
+}
+
+
+
+void deleteList(LinkList list, int place)
+{
+  LinkList p = list, q;
+  int i = 0;
+  if (place < 0 || place > n)
+    printf("删除位置不合法\n");
+
+  while(p && i++ < place - 1)
+  {
+    p = p->next;
+  }
+
+  q = p->next;
+  p->next = q->next;
+
+  free(q);
+}
+
+
+
+void reverseList(LinkList list)
+{
+  LinkList q, p;
+
+  if (!list) {
+    printf("无元素\n");
+    return;
+  }
+
+  p = list->next;
+
+  while(p->next)
+  {
+    q = p->next;
+    p->next = q->next;
+    q->next = list->next;
+    list->next = q;
+  }
+}
+
+
+
+void print(LinkList list)
+{
+  LinkList p = list->next;
+  while(p)
+  {
+    printf("%s %s %s %d %s %d\n", p->studentNumber, p->name, p->sex, p->age, p->major, p->studentClass);
+    p = p->next;
+  }
+  putchar('\n');
+}
+
+void find(LinkList list, char num[]) {
+  LinkList p = list->next;
+  int flag = 1;
+  while (p) {
+    if (!strcmp(p->studentNumber, num)) {
+      printf("%s %s %s %d %s %d\n", p->studentNumber, p->name, p->sex, p->age, p->major, p->studentClass);
+      flag = 0;
+      break;
+    }
+
+    p = p->next;
+  }
+
+  if (flag == 1) {
+    printf("未找到\n\n");
+  }
+
+}
+
+
+int main(void)
+{
+  LinkList list, otherlist;
+  int flag, place;
+  Node temp;
+  char num[11];
+
+  list = initailList();
+  printf("请输入数据个数:");
+  scanf("%d", &n);
+  createList(list, n);
+  reverseList(list);
+
+  printf("1.查看链表        2.插入元素    3.删除位置\n");
+  printf("4.按学号查找      5.退出\n");
+  while(scanf("%d", &flag) && flag != 5)
+  {
+    switch(flag)
+    {
+      case 1: print(list); break;
+      case 2: printf("请输入要插入的位置和学号，姓名，性别，年龄，专业，班级:");
+              scanf("%d %s %s %s %d %s %d", &place, temp.studentNumber, temp.name, temp.sex, &temp.age, temp.major, &temp.studentClass);
+              insertList(list, place, temp);n++;print(list);  break;
+      case 3: printf("请输入要删除的位置:");
+            scanf("%d", &place);
+            deleteList(list, place);print(list);n--;  break;
+      case 4: printf("输入查询的学号:");scanf("%s", num); find(list, num); break;
+
+      default: printf("操作不合法\n");break;
+    }
+  }
+
+  return 0;
+}
